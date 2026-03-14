@@ -1,71 +1,106 @@
-
-# Payment-Api
-"Gateway de pagamentos inteligente com roteamento de prioridades e alta disponibilidade. Garante o processamento de vendas através de um sistema robusto de fallback entre adquirentes."
-=======
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 🚀 SmartRoute Payment API
 
 <p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
+  <img src="https://img.shields.io/badge/Laravel-10-FF2D20?style=for-the-badge&logo=laravel" alt="Laravel 10" />
+  <img src="https://img.shields.io/badge/PHP-8.2-777BB4?style=for-the-badge&logo=php" alt="PHP 8.2" />
+  <img src="https://img.shields.io/badge/Docker-Sail-2496ED?style=for-the-badge&logo=docker" alt="Docker Sail" />
+  <img src="https://img.shields.io/badge/Swagger-OpenAPI_3-85EA2D?style=for-the-badge&logo=swagger" alt="Swagger" />
 </p>
 
-## About Laravel
+> **Infraestrutura de pagamentos resiliente.** Uma API de alta disponibilidade que gerencia transações através de múltiplos gateways com um motor de **failover automático** integrado.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## 💎 Diferenciais Técnicos
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+Este projeto foi arquitetado para suportar falhas críticas de infraestrutura utilizando padrões de design modernos:
 
-## Learning Laravel
+| Recurso | Descrição |
+| :--- | :--- |
+| **Pattern Strategy** | Gateways desacoplados, permitindo trocar provedores sem alterar o core do sistema. |
+| **Failover Engine** | Retry automático em gateways secundários caso o principal retorne erro ou timeout. |
+| **Atomicidade** | Uso de `DB::transaction` para garantir consistência entre o banco local e o gateway externo. |
+| **Segurança ACL** | Controle de acesso baseado em funções (Admin vs Vendedor) via Sanctum. |
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+---
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+## 🛠️ Instalação e Setup (Docker)
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+Siga os passos abaixo para subir o ambiente completo em poucos minutos:
 
-## Laravel Sponsors
+### 1. Preparação do Ambiente
+```bash
+# Clonar o repositório
+git clone [https://github.com/Vitor-dev2705/Payment-Api.git](https://github.com/Vitor-dev2705/Payment-Api.git)
+cd Payment-Api
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+# Configurar variáveis de ambiente
+cp .env.example .env
+```
 
-### Premium Partners
+### 2. Execução via Laravel Sail
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+### Instalar dependências sem PHP local
+`
+docker run --rm -u "$(id -u):$(id -g)" -v "$(pwd):/var/www/html" -w /var/www/html laravelsail/php82-composer:latest composer install --ignore-platform-reqs
+`
+### Iniciar os containers
+`./vendor/bin/sail up -d`
 
-## Contributing
+### Finalizar configuração da aplicação
+```
+./vendor/bin/sail artisan key:generate
+./vendor/bin/sail artisan migrate --seed
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+📖 ### Documentação Interativa (Swagger)
 
-## Code of Conduct
+A API possui documentação auto-gerada que permite testar os endpoints em tempo real.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```
+    🔗 Acesso: http://localhost/api/documentation
 
-## Security Vulnerabilities
+    🔑 Credenciais de Teste:
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+    Login: admin@betalent.tech
 
-## License
+    Senha: password123
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
->>>>>>> 1180fed (feat: initial commit with smart payment routing and swagger)
+### Como Autenticar:
+
+
+Execute o endpoint `POST /api/login.`
+
+Copie o campo `token` da resposta.
+
+Clique no botão Authorize (topo da página) e cole o token.
+
+## 🛣️ Arquitetura de Endpoints
+
+| Método | Endpoint | Acesso | Descrição |
+| :--- | :--- | :--- | :--- |
+| <img src="https://img.shields.io/badge/POST-49CC90?style=flat-square&logoColor=white" alt="POST"> | `/api/login` | **Público** | Autenticação e emissão de Bearer Token. |
+| <img src="https://img.shields.io/badge/GET-61AFFE?style=flat-square&logoColor=white" alt="GET"> | `/api/products` | **Livre** | Catálogo de produtos disponíveis. |
+| <img src="https://img.shields.io/badge/GET-61AFFE?style=flat-square&logoColor=white" alt="GET"> | `/api/clients` | <span style="color: #ffca28">**Admin**</span> | Listagem de clientes e histórico de compras. |
+| <img src="https://img.shields.io/badge/POST-49CC90?style=flat-square&logoColor=white" alt="POST"> | `/api/purchase` | **Auth** | Processamento de checkout com failover automático. |
+
+⚙️ ### Configurações de Gateway
+
+Você pode gerenciar o comportamento do motor de pagamento diretamente no seu arquivo .env:
+
+### Definir ordem de tentativa dos gateways
+`GATEWAY_PRIMARY=pagseguro`
+`GATEWAY_SECONDARY=pagarme`
+
+### Configurações de Timeout (em segundos)
+`PAYMENT_TIMEOUT=30`
+
+## 🧪 Comandos de Manutenção
+
+| Objetivo | Comando |
+| :--- | :--- |
+| 📘 **Regerar Swagger** | `./vendor/bin/sail artisan l5-swagger:generate` |
+| 🧹 **Limpar Cache** | `./vendor/bin/sail artisan config:clear` |
+| 🧪 **Rodar Testes** | `./vendor/bin/sail artisan test` |
+| 🔄 **Reiniciar Containers** | `./vendor/bin/sail down && ./vendor/bin/sail up -d` |
