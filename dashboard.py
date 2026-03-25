@@ -3,24 +3,29 @@ import pandas as pd
 import mysql.connector
 import plotly.express as px
 
-# Configuração da Página
 st.set_page_config(page_title="SmartRoute Analytics", layout="wide")
 
-# Conexão com o Banco do Laravel (Docker)
 def get_data():
-    conn = mysql.connector.connect(
-        host="127.0.0.1",
-        port="3306",
-        user="sail",
-        password="password",
-        database="Laravel"
-    )
-    query = "SELECT * FROM transactions"
-    df = pd.read_sql(query, conn)
-    conn.close()
-    return df
+    try:
+        conn = mysql.connector.connect(
+            host=st.secrets["DB_HOST"],
+            user=st.secrets["DB_USER"],
+            password=st.secrets["DB_PASS"],
+            database=st.secrets["DB_NAME"]
+        )
+        df = pd.read_sql("SELECT * FROM transactions", conn)
+        conn.close()
+        return df
+    except:
+        data = {
+            'gateway': ['pagseguro', 'pagarme', 'pagseguro', 'pagarme'],
+            'amount': [100.0, 150.0, 200.0, 50.0],
+            'status': ['paid', 'paid', 'paid', 'paid'],
+            'created_at': pd.to_datetime(['2026-03-01', '2026-03-02', '2026-03-03', '2026-03-04'])
+        }
+        return pd.DataFrame(data)
 
-st.title("🚀 SmartRoute Payment Dashboard")
+st.title("SmartRoute Payment Dashboard")
 st.markdown("Monitoramento de transações e performance de Gateways")
 
 try:
@@ -47,7 +52,7 @@ try:
         st.plotly_chart(fig_time)
 
     # --- TABELA DE DADOS ---
-    st.subheader("📋 Últimas Transações")
+    st.subheader("Últimas Transações")
     st.dataframe(df.sort_values('created_at', ascending=False), use_container_width=True)
 
 except Exception as e:
