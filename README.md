@@ -31,7 +31,7 @@ Siga os passos abaixo para subir o ambiente completo em poucos minutos:
 ### 1. Preparação do Ambiente
 ```bash
 # Clonar o repositório
-git clone [https://github.com/Vitor-dev2705/Payment-Api.git](https://github.com/Vitor-dev2705/Payment-Api.git)
+git clone https://github.com/Vitor-dev2705/Payment-Api.git
 cd Payment-Api
 
 # Configurar variáveis de ambiente
