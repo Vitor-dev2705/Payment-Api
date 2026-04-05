@@ -25,12 +25,10 @@ ENV APACHE_DOCUMENT_ROOT /var/www/html/public
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/000-default.conf
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf
 
-
-
 EXPOSE 80
 
-CMD sh -c "cp .env.example .env && \
+CMD if [ ! -f .env ]; then cp .env.example .env; fi && \
     php artisan key:generate --force && \
     php artisan migrate --seed --force && \
     php artisan l5-swagger:generate && \
-    apache2-foreground"
+    apache2-foreground
