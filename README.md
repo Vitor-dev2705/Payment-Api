@@ -1,106 +1,55 @@
-# 🚀 SmartRoute Payment API
+# 💳 SmartRoute - Payment Gateway API
 
-<p align="center">
-  <img src="https://img.shields.io/badge/Laravel-10-FF2D20?style=for-the-badge&logo=laravel" alt="Laravel 10" />
-  <img src="https://img.shields.io/badge/PHP-8.2-777BB4?style=for-the-badge&logo=php" alt="PHP 8.2" />
-  <img src="https://img.shields.io/badge/Docker-Sail-2496ED?style=for-the-badge&logo=docker" alt="Docker Sail" />
-  <img src="https://img.shields.io/badge/Swagger-OpenAPI_3-85EA2D?style=for-the-badge&logo=swagger" alt="Swagger" />
-</p>
+Esta é uma API de roteamento de pagamentos desenvolvida em **Laravel 10** e **PHP 8.3**, focada em resiliência e alta disponibilidade. O projeto utiliza **Docker** para garantir um ambiente idêntico ao de produção, com configuração totalmente automatizada.
 
-> **Infraestrutura de pagamentos resiliente.** Uma API de alta disponibilidade que gerencia transações através de múltiplos gateways com um motor de **failover automático** integrado.
+## 🚀 Como Executar (Quick Start)
+
+O projeto foi desenhado para ser **Zero Config**. Não é necessário criar arquivos manualmente ou configurar o banco de dados.
+
+1.  **Clone o repositório:**
+    ```bash
+    git clone [https://github.com/seu-usuario/Payment-Api.git](https://github.com/seu-usuario/Payment-Api.git)
+    cd Payment-Api
+    ```
+
+2.  **Suba o ambiente completo:**
+    ```bash
+    docker-compose up -d --build
+    ```
+
+> **Nota:** Ao rodar este comando, o Docker irá automaticamente:
+> * Criar o arquivo `.env` a partir do `.env.example`.
+> * Gerar a chave única de criptografia (`APP_KEY`).
+> * Executar as migrações do banco de dados e alimentar as tabelas (`Seeds`).
+> * Gerar a documentação interativa do Swagger.
 
 ---
 
-## 💎 Diferenciais Técnicos
+## 🔗 Endpoints e Acesso
 
-Este projeto foi arquitetado para suportar falhas críticas de infraestrutura utilizando padrões de design modernos:
+Após o término do build (cerca de 30 a 60 segundos), acesse:
 
-| Recurso | Descrição |
-| :--- | :--- |
-| **Pattern Strategy** | Gateways desacoplados, permitindo trocar provedores sem alterar o core do sistema. |
-| **Failover Engine** | Retry automático em gateways secundários caso o principal retorne erro ou timeout. |
-| **Atomicidade** | Uso de `DB::transaction` para garantir consistência entre o banco local e o gateway externo. |
-| **Segurança ACL** | Controle de acesso baseado em funções (Admin vs Vendedor) via Sanctum. |
+* **Documentação Swagger (UI):** [http://localhost/api/documentation](http://localhost/api/documentation)
+* **API Health Check:** [http://localhost](http://localhost)
 
 ---
 
-## 🛠️ Instalação e Setup (Docker)
+## 🛠️ Stack Tecnológica
 
-Siga os passos abaixo para subir o ambiente completo em poucos minutos:
+* **Linguagem:** PHP 8.3
+* **Framework:** Laravel 10
+* **Banco de Dados:** MySQL 8.4
+* **Documentação:** Swagger / OpenApi 3.0
+* **Infraestrutura:** Docker & Docker Compose
+* **Mock Service:** Gateways-mock (Simulação de adquirentes externas)
 
-### 1. Preparação do Ambiente
-```bash
-# Clonar o repositório
-git clone https://github.com/Vitor-dev2705/Payment-Api.git
-cd Payment-Api
+---
 
-# Configurar variáveis de ambiente
-cp .env.example .env
-```
+## 🏗️ Diferenciais do Projeto
 
-### 2. Execução via Laravel Sail
+* **Arquitetura Plug-and-Play:** O uso de `entrypoint` customizado no Dockerfile elimina a necessidade de scripts `.bat` ou comandos manuais.
+* **Segurança:** Implementação de boas práticas com `.env.example` para proteção de dados sensíveis.
+* **Resiliência:** Configuração de `healthcheck` no MySQL para garantir que a API só tente conectar quando o banco estiver pronto.
+* **Foco em Dados:** Estrutura preparada para logs de transações e análise de performance de pagamentos.
 
-### Instalar dependências sem PHP local
-`
-docker run --rm -u "$(id -u):$(id -g)" -v "$(pwd):/var/www/html" -w /var/www/html laravelsail/php82-composer:latest composer install --ignore-platform-reqs
-`
-### Iniciar os containers
-`./vendor/bin/sail up -d`
-
-### Finalizar configuração da aplicação
-```
-./vendor/bin/sail artisan key:generate
-./vendor/bin/sail artisan migrate --seed
-```
-
-📖 ### Documentação Interativa (Swagger)
-
-A API possui documentação auto-gerada que permite testar os endpoints em tempo real.
-
-```
-    🔗 Acesso: http://localhost/api/documentation
-
-    🔑 Credenciais de Teste:
-
-    Login: admin@betalent.tech
-
-    Senha: password123
-```
-
-### Como Autenticar:
-
-
-Execute o endpoint `POST /api/login.`
-
-Copie o campo `token` da resposta.
-
-Clique no botão Authorize (topo da página) e cole o token.
-
-## 🛣️ Arquitetura de Endpoints
-
-| Método | Endpoint | Acesso | Descrição |
-| :--- | :--- | :--- | :--- |
-| <img src="https://img.shields.io/badge/POST-49CC90?style=flat-square&logoColor=white" alt="POST"> | `/api/login` | **Público** | Autenticação e emissão de Bearer Token. |
-| <img src="https://img.shields.io/badge/GET-61AFFE?style=flat-square&logoColor=white" alt="GET"> | `/api/products` | **Livre** | Catálogo de produtos disponíveis. |
-| <img src="https://img.shields.io/badge/GET-61AFFE?style=flat-square&logoColor=white" alt="GET"> | `/api/clients` | <span style="color: #ffca28">**Admin**</span> | Listagem de clientes e histórico de compras. |
-| <img src="https://img.shields.io/badge/POST-49CC90?style=flat-square&logoColor=white" alt="POST"> | `/api/purchase` | **Auth** | Processamento de checkout com failover automático. |
-
-⚙️ ### Configurações de Gateway
-
-Você pode gerenciar o comportamento do motor de pagamento diretamente no seu arquivo .env:
-
-### Definir ordem de tentativa dos gateways
-`GATEWAY_PRIMARY=pagseguro`
-`GATEWAY_SECONDARY=pagarme`
-
-### Configurações de Timeout (em segundos)
-`PAYMENT_TIMEOUT=30`
-
-## 🧪 Comandos de Manutenção
-
-| Objetivo | Comando |
-| :--- | :--- |
-| 📘 **Regerar Swagger** | `./vendor/bin/sail artisan l5-swagger:generate` |
-| 🧹 **Limpar Cache** | `./vendor/bin/sail artisan config:clear` |
-| 🧪 **Rodar Testes** | `./vendor/bin/sail artisan test` |
-| 🔄 **Reiniciar Containers** | `./vendor/bin/sail down && ./vendor/bin/sail up -d` |
+---
